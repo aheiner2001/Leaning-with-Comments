@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<style>
+
+
+    body{
+        background-color: aqua;
+
+
+    }
+
+    .cube {
+        
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(15deg) rotateY(25deg);
+            transition: transform 0.3s ease;
+        }
+
+        .face {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 2px;
+            border: 2px solid #333;
+        }
+
+        .square {
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        .square:hover {
+            transform: scale(0.95);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        /* Face positions */
+        .front { 
+            background: rgba(255, 255, 255, 0.9);
+            transform: rotateY(0deg) translateZ(150px); 
+        }
+        .back { 
+            background: rgba(255, 255, 0, 0.9);
+            transform: rotateY(180deg) translateZ(150px); 
+        }
+        .right { 
+            background: rgba(255, 165, 0, 0.9);
+            transform: rotateY(90deg) translateZ(150px); 
+        }
+        .left { 
+            background: rgba(255, 0, 0, 0.9);
+            transform: rotateY(0deg) translateZ(150px); 
+        }
+        .top { 
+            background: rgba(0, 128, 0, 0.9);
+            transform: rotateX(90deg) translateZ(150px); 
+        }
+        .bottom { 
+            background: rgba(0, 0, 255, 0.9);
+            transform: rotateX(-90deg) translateZ(150px); 
+        }
+
+</style>
+<body>
+
+
+
+    <div class="cube" id="cube">
+                <!-- Front face (White) -->
+                <div class="face front" data-face="front">
+                    <div class="square white"></div><div class="square white"></div><div class="square white"></div>
+                    <div class="square white"></div><div class="square white"></div><div class="square white"></div>
+                    <div class="square white"></div><div class="square white"></div><div class="square white"></div>
+                </div>
+                
+                <!-- Back face (Yellow) -->
+                <div class="face back" data-face="back">
+                    <div class="square yellow"></div><div class="square yellow"></div><div class="square yellow"></div>
+                    <div class="square yellow"></div><div class="square yellow"></div><div class="square yellow"></div>
+                    <div class="square yellow"></div><div class="square yellow"></div><div class="square yellow"></div>
+                </div>
+                
+                <!-- Right face (Orange) -->
+                <div class="face right" data-face="right">
+                    <div class="square orange"></div><div class="square orange"></div><div class="square orange"></div>
+                    <div class="square orange"></div><div class="square orange"></div><div class="square orange"></div>
+                    <div class="square orange"></div><div class="square orange"></div><div class="square orange"></div>
+                </div>
+                
+                <!-- Left face (Red) -->
+                <div class="face left" data-face="left">
+                    <div class="square red"></div><div class="square red"></div><div class="square red"></div>
+                    <div class="square red"></div><div class="square red"></div><div class="square red"></div>
+                    <div class="square red"></div><div class="square red"></div><div class="square red"></div>
+                </div>
+                
+                <!-- Top face (Green) -->
+                <div class="face top" data-face="top">
+                    <div class="square green"></div><div class="square green"></div><div class="square green"></div>
+                    <div class="square green"></div><div class="square green"></div><div class="square green"></div>
+                    <div class="square green"></div><div class="square green"></div><div class="square green"></div>
+                </div>
+                
+                <!-- Bottom face (Blue) -->
+                <div class="face bottom" data-face="bottom">
+                    <div class="square blue"></div><div class="square blue"></div><div class="square blue"></div>
+                    <div class="square blue"></div><div class="square blue"></div><div class="square blue"></div>
+                    <div class="square blue"></div><div class="square blue"></div><div class="square blue"></div>
+                </div>
+    
+</body>
+</html>

@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!-- TODO -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Rubik's Cube</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .container {
+            perspective: 1000px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .cube-container {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(15deg) rotateY(25deg);
+            transition: transform 0.3s ease;
+        }
+
+        .face {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 2px;
+            border: 2px solid #333;
+        }
+
+        .square {
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        .square:hover {
+            transform: scale(0.95);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        /* Face positions */
+        .front { 
+            background: rgba(255, 255, 255, 0.9);
+            transform: rotateY(0deg) translateZ(150px); 
+        }
+        .back { 
+            background: rgba(255, 255, 0, 0.9);
+            transform: rotateY(180deg) translateZ(150px); 
+        }
+        .right { 
+            background: rgba(255, 165, 0, 0.9);
+            transform: rotateY(90deg) translateZ(150px); 
+        }
+        .left { 
+            background: rgba(255, 0, 0, 0.9);
+            transform: rotateY(-90deg) translateZ(150px); 
+        }
+        .top { 
+            background: rgba(0, 128, 0, 0.9);
+            transform: rotateX(90deg) translateZ(150px); 
+        }
+        .bottom { 
+            background: rgba(0, 0, 255, 0.9);
+            transform: rotateX(-90deg) translateZ(150px); 
+        }
+
+        /* Color classes for squares */
+        .white { background: #ffffff; }
+        .yellow { background: #ffff00; }
+        .orange { background: #ffa500; }
+        .red { background: #ff0000; }
+        .green { background: #008000; }
+        .blue { background: #0000ff; }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 600px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .title {
+            color: white;
+            font-size: 2.5em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .rotating {
+            pointer-events: none;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .cube-container {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .face {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .face.front, .face.back { transform: rotateY(0deg) translateZ(125px); }
+            .face.back { transform: rotateY(180deg) translateZ(125px); }
+            .face.right { transform: rotateY(90deg) translateZ(125px); }
+            .face.left { transform: rotateY(-90deg) translateZ(125px); }
+            .face.top { transform: rotateX(90deg) translateZ(125px); }
+            .face.bottom { transform: rotateX(-90deg) translateZ(125px); }
+            
+            .title {
+                font-size: 2em;
+            }
+            
+            .btn {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Interactive Rubik's Cube</h1>
+        
+        <div class="cube-container" id="cubeContainer">
+            <div class="cube" id="cube">
+                <!-- Front face (White) -->
+                <div class="face front" data-face="front">
+                    <div class="square white"></div><div class="square white"></div><div class="square white"></div>
+                    <div class="square white"></div><div class="square white"></div><div class="square white"></div>
+                    <div class="square white"></div><div class="square white"></div><div class="square white"></div>
+                </div>
+                
+                <!-- Back face (Yellow) -->
+                <div class="face back" data-face="back">
+                    <div class="square yellow"></div><div class="square yellow"></div><div class="square yellow"></div>
+                    <div class="square yellow"></div><div class="square yellow"></div><div class="square yellow"></div>
+                    <div class="square yellow"></div><div class="square yellow"></div><div class="square yellow"></div>
+                </div>
+                
+                <!-- Right face (Orange) -->
+                <div class="face right" data-face="right">
+                    <div class="square orange"></div><div class="square orange"></div><div class="square orange"></div>
+                    <div class="square orange"></div><div class="square orange"></div><div class="square orange"></div>
+                    <div class="square orange"></div><div class="square orange"></div><div class="square orange"></div>
+                </div>
+                
+                <!-- Left face (Red) -->
+                <div class="face left" data-face="left">
+                    <div class="square red"></div><div class="square red"></div><div class="square red"></div>
+                    <div class="square red"></div><div class="square red"></div><div class="square red"></div>
+                    <div class="square red"></div><div class="square red"></div><div class="square red"></div>
+                </div>
+                
+                <!-- Top face (Green) -->
+                <div class="face top" data-face="top">
+                    <div class="square green"></div><div class="square green"></div><div class="square green"></div>
+                    <div class="square green"></div><div class="square green"></div><div class="square green"></div>
+                    <div class="square green"></div><div class="square green"></div><div class="square green"></div>
+                </div>
+                
+                <!-- Bottom face (Blue) -->
+                <div class="face bottom" data-face="bottom">
+                    <div class="square blue"></div><div class="square blue"></div><div class="square blue"></div>
+                    <div class="square blue"></div><div class="square blue"></div><div class="square blue"></div>
+                    <div class="square blue"></div><div class="square blue"></div><div class="square blue"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="rotateFaceClockwise('front')">Front ↻</button>
+            <button class="btn" onclick="rotateFaceClockwise('back')">Back ↻</button>
+            <button class="btn" onclick="rotateFaceClockwise('right')">Right ↻</button>
+            <button class="btn" onclick="rotateFaceClockwise('left')">Left ↻</button>
+            <button class="btn" onclick="rotateFaceClockwise('top')">Top ↻</button>
+            <button class="btn" onclick="rotateFaceClockwise('bottom')">Bottom ↻</button>
+            <button class="btn" onclick="scrambleCube()">Scramble</button>
+            <button class="btn" onclick="resetCube()">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        let cubeRotationX = 15;
+        let cubeRotationY = 25;
+        let isDragging = true;
+        let startX, startY;
+        let isRotating = false;
+
+        const cube = document.getElementById('cube');
+        const cubeContainer = document.getElementById('cubeContainer');
+
+        // Store cube state - each face has 9 squares with color indices
+        let cubeState = {
+            front: [0,0,0,0,0,0,0,0,0],   // white = 0
+            back: [1,1,1,1,1,1,1,1,1],    // yellow = 1
+            right: [2,2,2,2,2,2,2,2,2],   // orange = 2
+            left: [3,3,3,3,3,3,3,3,3],    // red = 3
+            top: [4,4,4,4,4,4,4,4,4],     // green = 4
+            bottom: [5,5,5,5,5,5,5,5,5]   // blue = 5
+        };
+
+        const colors = ['white', 'yellow', 'orange', 'red', 'green', 'blue'];
+        const colorNames = ['White', 'Yellow', 'Orange', 'Red', 'Green', 'Blue'];
+
+        // Mouse and touch interaction
+        cubeContainer.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', endDrag);
+        cubeContainer.addEventListener('touchstart', startDrag);
+        document.addEventListener('touchmove', drag);
+        document.addEventListener('touchend', endDrag);
+
+        function startDrag(e) {
+            if (isRotating) return;
+            isDragging = true;
+            
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            startX = clientX;
+            startY = clientY;
+            e.preventDefault();
+        }
+
+        function drag(e) {
+            if (!isDragging || isRotating) return;
+            
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            const deltaX = clientX - startX;
+            const deltaY = clientY - startY;
+            
+            cubeRotationY += deltaX * 0.5;
+            cubeRotationX -= deltaY * 0.5;
+            
+            // Constrain rotation to reasonable bounds
+            cubeRotationX = Math.max(-90, Math.min(90, cubeRotationX));
+            
+            cube.style.transform = `rotateX(${cubeRotationX}deg) rotateY(${cubeRotationY}deg)`;
+            
+            startX = clientX;
+            startY = clientY;
+        }
+
+        function endDrag() {
+            isDragging = false;
+        }
+
+        function rotateFaceClockwise(faceName) {
+            if (isRotating) return;
+            isRotating = true;
+            
+            // Perform the logical rotation first
+            rotateLogicalFace(faceName);
+            
+            // Visual rotation animation
+            const faceElement = document.querySelector(`.face.${faceName}`);
+            faceElement.style.transform += ' rotateZ(90deg)';
+            faceElement.style.transition = 'transform 0.4s ease';
+            
+            setTimeout(() => {
+                // Reset transform and update visual colors
+                faceElement.style.transform = faceElement.style.transform.replace(' rotateZ(90deg)', '');
+                updateFaceVisuals(faceName);
+                updateAdjacentFaces(faceName);
+                
+                setTimeout(() => {
+                    faceElement.style.transition = '';
+                    isRotating = false;
+                }, 50);
+            }, 400);
+        }
+
+        function rotateLogicalFace(faceName) {
+            const face = cubeState[faceName];
+            // Rotate the face itself 90 degrees clockwise
+            const temp = [
+                face[6], face[3], face[0],
+                face[7], face[4], face[1],
+                face[8], face[5], face[2]
+            ];
+            cubeState[faceName] = temp;
+            
+            // Rotate adjacent edges
+            rotateAdjacentEdges(faceName);
+        }
+
+        function rotateAdjacentEdges(faceName) {
+            let temp;
+            
+            switch(faceName) {
+                case 'front':
+                    temp = [cubeState.top[6], cubeState.top[7], cubeState.top[8]];
+                    cubeState.top[6] = cubeState.left[8];
+                    cubeState.top[7] = cubeState.left[5];
+                    cubeState.top[8] = cubeState.left[2];
+                    cubeState.left[8] = cubeState.bottom[2];
+                    cubeState.left[5] = cubeState.bottom[1];
+                    cubeState.left[2] = cubeState.bottom[0];
+                    cubeState.bottom[2] = cubeState.right[0];
+                    cubeState.bottom[1] = cubeState.right[3];
+                    cubeState.bottom[0] = cubeState.right[6];
+                    cubeState.right[0] = temp[0];
+                    cubeState.right[3] = temp[1];
+                    cubeState.right[6] = temp[2];
+                    break;
+                    
+                case 'back':
+                    temp = [cubeState.top[0], cubeState.top[1], cubeState.top[2]];
+                    cubeState.top[0] = cubeState.right[2];
+                    cubeState.top[1] = cubeState.right[5];
+                    cubeState.top[2] = cubeState.right[8];
+                    cubeState.right[2] = cubeState.bottom[8];
+                    cubeState.right[5] = cubeState.bottom[7];
+                    cubeState.right[8] = cubeState.bottom[6];
+                    cubeState.bottom[8] = cubeState.left[6];
+                    cubeState.bottom[7] = cubeState.left[3];
+                    cubeState.bottom[6] = cubeState.left[0];
+                    cubeState.left[6] = temp[0];
+                    cubeState.left[3] = temp[1];
+                    cubeState.left[0] = temp[2];
+                    break;
+                    
+                case 'right':
+                    temp = [cubeState.top[2], cubeState.top[5], cubeState.top[8]];
+                    cubeState.top[2] = cubeState.front[2];
+                    cubeState.top[5] = cubeState.front[5];
+                    cubeState.top[8] = cubeState.front[8];
+                    cubeState.front[2] = cubeState.bottom[2];
+                    cubeState.front[5] = cubeState.bottom[5];
+                    cubeState.front[8] = cubeState.bottom[8];
+                    cubeState.bottom[2] = cubeState.back[6];
+                    cubeState.bottom[5] = cubeState.back[3];
+                    cubeState.bottom[8] = cubeState.back[0];
+                    cubeState.back[6] = temp[0];
+                    cubeState.back[3] = temp[1];
+                    cubeState.back[0] = temp[2];
+                    break;
+                    
+                case 'left':
+                    temp = [cubeState.top[0], cubeState.top[3], cubeState.top[6]];
+                    cubeState.top[0] = cubeState.back[8];
+                    cubeState.top[3] = cubeState.back[5];
+                    cubeState.top[6] = cubeState.back[2];
+                    cubeState.back[8] = cubeState.bottom[0];
+                    cubeState.back[5] = cubeState.bottom[3];
+                    cubeState.back[2] = cubeState.bottom[6];
+                    cubeState.bottom[0] = cubeState.front[0];
+                    cubeState.bottom[3] = cubeState.front[3];
+                    cubeState.bottom[6] = cubeState.front[6];
+                    cubeState.front[0] = temp[0];
+                    cubeState.front[3] = temp[1];
+                    cubeState.front[6] = temp[2];
+                    break;
+                    
+                case 'top':
+                    temp = [cubeState.front[0], cubeState.front[1], cubeState.front[2]];
+                    cubeState.front[0] = cubeState.right[0];
+                    cubeState.front[1] = cubeState.right[1];
+                    cubeState.front[2] = cubeState.right[2];
+                    cubeState.right[0] = cubeState.back[0];
+                    cubeState.right[1] = cubeState.back[1];
+                    cubeState.right[2] = cubeState.back[2];
+                    cubeState.back[0] = cubeState.left[0];
+                    cubeState.back[1] = cubeState.left[1];
+                    cubeState.back[2] = cubeState.left[2];
+                    cubeState.left[0] = temp[0];
+                    cubeState.left[1] = temp[1];
+                    cubeState.left[2] = temp[2];
+                    break;
+                    
+                case 'bottom':
+                    temp = [cubeState.front[6], cubeState.front[7], cubeState.front[8]];
+                    cubeState.front[6] = cubeState.left[6];
+                    cubeState.front[7] = cubeState.left[7];
+                    cubeState.front[8] = cubeState.left[8];
+                    cubeState.left[6] = cubeState.back[6];
+                    cubeState.left[7] = cubeState.back[7];
+                    cubeState.left[8] = cubeState.back[8];
+                    cubeState.back[6] = cubeState.right[6];
+                    cubeState.back[7] = cubeState.right[7];
+                    cubeState.back[8] = cubeState.right[8];
+                    cubeState.right[6] = temp[0];
+                    cubeState.right[7] = temp[1];
+                    cubeState.right[8] = temp[2];
+                    break;
+            }
+        }
+
+        function updateFaceVisuals(faceName) {
+            const faceElement = document.querySelector(`.face.${faceName}`);
+            const squares = faceElement.querySelectorAll('.square');
+            const faceState = cubeState[faceName];
+            
+            squares.forEach((square, index) => {
+                const colorIndex = faceState[index];
+                square.className = `square ${colors[colorIndex]}`;
+            });
+        }
+
+        function updateAdjacentFaces(faceName) {
+            const adjacentFaces = {
+                front: ['top', 'right', 'bottom', 'left'],
+                back: ['top', 'left', 'bottom', 'right'],
+                right: ['top', 'back', 'bottom', 'front'],
+                left: ['top', 'front', 'bottom', 'back'],
+                top: ['back', 'right', 'front', 'left'],
+                bottom: ['front', 'right', 'back', 'left']
+            };
+            
+            if (adjacentFaces[faceName]) {
+                adjacentFaces[faceName].forEach(face => {
+                    updateFaceVisuals(face);
+                });
+            }
+        }
+
+        function scrambleCube() {
+            if (isRotating) return;
+            
+            const faces = ['front', 'back', 'right', 'left', 'top', 'bottom'];
+            const moves = 20;
+            
+            for (let i = 0; i < moves; i++) {
+                const randomFace = faces[Math.floor(Math.random() * faces.length)];
+                setTimeout(() => {
+                    rotateLogicalFace(randomFace);
+                    updateFaceVisuals(randomFace);
+                    updateAdjacentFaces(randomFace);
+                }, i * 50);
+            }
+        }
+
+        function resetCube() {
+            if (isRotating) return;
+            
+            // Reset cube state
+            cubeState = {
+                front: [0,0,0,0,0,0,0,0,0],
+                back: [1,1,1,1,1,1,1,1,1],
+                right: [2,2,2,2,2,2,2,2,2],
+                left: [3,3,3,3,3,3,3,3,3],
+                top: [4,4,4,4,4,4,4,4,4],
+                bottom: [5,5,5,5,5,5,5,5,5]
+            };
+            
+            // Update all face visuals
+            Object.keys(cubeState).forEach(faceName => {
+                updateFaceVisuals(faceName);
+            });
+            
+            // Reset cube rotation
+            cubeRotationX = 15;
+            cubeRotationY = 25;
+            cube.style.transform = `rotateX(${cubeRotationX}deg) rotateY(${cubeRotationY}deg)`;
+        }
+
+        // Add click feedback to squares
+        document.querySelectorAll('.square').forEach(square => {
+            square.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (!isRotating) {
+                    this.style.transform = 'scale(0.9)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                }
+            });
+        });
+
+        // Initialize cube
+        window.addEventListener('load', () => {
+            Object.keys(cubeState).forEach(faceName => {
+                updateFaceVisuals(faceName);
+            });
+        });
+    </script>
+</body>
+</html>
