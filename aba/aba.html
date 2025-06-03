@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABA Therapy Data Collection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            opacity: 0.8;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            min-height: 600px;
+        }
+
+        .sidebar {
+            background: #f7fafc;
+            border-right: 1px solid #e2e8f0;
+            padding: 30px 20px;
+        }
+
+        .sidebar h3 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        .program-list {
+            list-style: none;
+        }
+
+        .program-item {
+            background: white;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .program-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .program-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .program-button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            background: none;
+            text-align: left;
+            font-size: 1em;
+            cursor: pointer;
+            color: inherit;
+        }
+
+        .add-program-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .add-program-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+
+        .content-area {
+            padding: 30px;
+            background: white;
+        }
+
+        .program-details {
+            display: none;
+        }
+
+        .program-details.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .program-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .program-title {
+            font-size: 2em;
+            color: #2d3748;
+            font-weight: 300;
+        }
+
+        .trial-counter {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        .program-description {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .data-collection {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+        }
+
+        .data-collection h4 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .prompt-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .prompt-btn {
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .prompt-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .prompt-btn.independent {
+            border-color: #48bb78;
+            color: #48bb78;
+        }
+
+        .prompt-btn.independent:hover {
+            background: #48bb78;
+            color: white;
+        }
+
+        .prompt-btn.physical {
+            border-color: #ed8936;
+            color: #ed8936;
+        }
+
+        .prompt-btn.physical:hover {
+            background: #ed8936;
+            color: white;
+        }
+
+        .prompt-btn.no-response {
+            border-color: #4299e1;
+            color: #4299e1;
+        }
+
+        .prompt-btn.no-response:hover {
+            background: #4299e1;
+            color: white;
+        }
+
+        .prompt-btn.error {
+            border-color: #f56565;
+            color: #f56565;
+        }
+
+        .prompt-btn.error:hover {
+            background: #f56565;
+            color: white;
+        }
+
+        .trial-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .new-trial-btn, .view-data-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .new-trial-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .view-data-btn {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        .new-trial-btn:hover, .view-data-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            color: #2d3748;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-save, .btn-cancel {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .btn-save {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-table th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .welcome-message {
+            text-align: center;
+            color: #718096;
+            font-size: 1.2em;
+            margin-top: 100px;
+        }
+
+        .welcome-message h3 {
+            margin-bottom: 10px;
+            color: #4a5568;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ABA Therapy Data Collection</h1>
+            <p>Professional program tracking and data management system</p>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <h3>Programs</h3>
+                <ul class="program-list" id="programList">
+                    <!-- Programs will be added here -->
+                </ul>
+                <button class="add-program-btn" onclick="openAddProgramModal()">+ Add New Program</button>
+            </div>
+
+            <div class="content-area">
+                <div class="welcome-message" id="welcomeMessage">
+                    <h3>Welcome to ABA Data Collection</h3>
+                    <p>Select a program from the sidebar or add a new program to get started</p>
+                </div>
+                
+                <div id="programDetailsContainer">
+                    <!-- Program details will be shown here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Program Modal -->
+    <div id="addProgramModal" class="modal">
+        <div class="modal-content">
+            <h3>Add New Program</h3>
+            <div class="form-group">
+                <label for="programName">Program Name</label>
+                <input type="text" id="programName" placeholder="e.g., Motor Imitation">
+            </div>
+            <div class="form-group">
+                <label for="programDescription">Description</label>
+                <textarea id="programDescription" placeholder="Describe what this program involves..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="programInstructions">Instructions</label>
+                <textarea id="programInstructions" placeholder="Step-by-step instructions for running this program..."></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeAddProgramModal()">Cancel</button>
+                <button class="btn-save" onclick="saveProgram()">Save Program</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let programs = {
+            'motor-imitation': {
+                name: 'Motor Imitation',
+                description: 'This program focuses on developing the client\'s ability to imitate gross and fine motor movements demonstrated by the therapist.',
+                instructions: '1. Sit across from the client\n2. Gain attention by saying "Do this"\n3. Model the target movement clearly\n4. Wait 3-5 seconds for response\n5. Record the prompt level used\n6. Provide reinforcement for correct responses',
+                trials: [],
+                currentTrial: 1
+            },
+            'mand-tacting': {
+                name: 'Mand Tacting',
+                description: 'This program teaches the client to request (mand) items and label (tact) objects in their environment.',
+                instructions: '1. Present the target item or picture\n2. Use appropriate prompts based on current level\n3. Wait for client response\n4. Record response accuracy\n5. Provide reinforcement as needed\n6. Fade prompts systematically',
+                trials: [],
+                currentTrial: 1
+            }
+        };
+
+        let activeProgram = null;
+
+        function loadPrograms() {
+            const programList = document.getElementById('programList');
+            programList.innerHTML = '';
+            
+            for (const [key, program] of Object.entries(programs)) {
+                const li = document.createElement('li');
+                li.className = 'program-item';
+                li.innerHTML = `<button class="program-button" onclick="selectProgram('${key}')">${program.name}</button>`;
+                programList.appendChild(li);
+            }
+        }
+
+        function selectProgram(programKey) {
+            activeProgram = programKey;
+            const program = programs[programKey];
+            
+            // Update active state
+            document.querySelectorAll('.program-item').forEach(item => item.classList.remove('active'));
+            event.target.closest('.program-item').classList.add('active');
+            
+            // Hide welcome message
+            document.getElementById('welcomeMessage').style.display = 'none';
+            
+            // Show program details
+            const container = document.getElementById('programDetailsContainer');
+            container.innerHTML = `
+                <div class="program-details active">
+                    <div class="program-header">
+                        <h2 class="program-title">${program.name}</h2>
+                        <div class="trial-counter">Trial #${program.currentTrial}</div>
+                    </div>
+                    
+                    <div class="program-description">
+                        <h4>Program Description</h4>
+                        <p>${program.description}</p>
+                    </div>
+                    
+                    <div class="program-description">
+                        <h4>Instructions</h4>
+                        <pre style="white-space: pre-wrap; font-family: inherit;">${program.instructions}</pre>
+                    </div>
+                    
+                    <div class="data-collection">
+                        <h4>Data Collection - Trial #${program.currentTrial}</h4>
+                        <p style="margin-bottom: 20px; color: #718096;">Select the prompt level used for this trial:</p>
+                        
+                        <div class="prompt-buttons">
+                            <button class="prompt-btn independent" onclick="recordTrial('${programKey}', 'Independent')">
+                                Independent
+                            </button>
+                            <button class="prompt-btn physical" onclick="recordTrial('${programKey}', 'Full Physical')">
+                                Full Physical
+                            </button>
+                            <button class="prompt-btn no-response" onclick="recordTrial('${programKey}', 'No Response')">
+                                No Response
+                            </button>
+                            <button class="prompt-btn error" onclick="recordTrial('${programKey}', 'Error')">
+                                Error
+                            </button>
+                        </div>
+                        
+                        <div class="trial-actions">
+                            <button class="new-trial-btn" onclick="newTrial('${programKey}')">Start New Trial</button>
+                            <button class="view-data-btn" onclick="viewData('${programKey}')">View Data Summary</button>
+                        </div>
+                        
+                        <div id="dataDisplay-${programKey}"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function recordTrial(programKey, response) {
+            const program = programs[programKey];
+            const timestamp = new Date().toLocaleString();
+            
+            program.trials.push({
+                trial: program.currentTrial,
+                response: response,
+                timestamp: timestamp
+            });
+            
+            // Show confirmation
+            const buttons = document.querySelectorAll('.prompt-btn');
+            buttons.forEach(btn => {
+                if (btn.textContent.trim() === response) {
+                    btn.style.background = '#48bb78';
+                    btn.style.color = 'white';
+                    btn.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        btn.style.transform = 'scale(1)';
+                    }, 200);
+                }
+            });
+            
+            // Show recorded message
+            setTimeout(() => {
+                alert(`Trial #${program.currentTrial} recorded: ${response}`);
+            }, 300);
+        }
+
+        function newTrial(programKey) {
+            const program = programs[programKey];
+            program.currentTrial++;
+            selectProgram(programKey); // Refresh the display
+        }
+
+        function viewData(programKey) {
+            const program = programs[programKey];
+            const dataDisplay = document.getElementById(`dataDisplay-${programKey}`);
+            
+            if (program.trials.length === 0) {
+                dataDisplay.innerHTML = '<p style="color: #718096; text-align: center; margin-top: 20px;">No data recorded yet</p>';
+                return;
+            }
+            
+            let tableHTML = `
+                <h4 style="margin-top: 30px; margin-bottom: 15px;">Trial Data</h4>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Trial #</th>
+                            <th>Response</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            program.trials.forEach(trial => {
+                tableHTML += `
+                    <tr>
+                        <td>${trial.trial}</td>
+                        <td>${trial.response}</td>
+                        <td>${trial.timestamp}</td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += '</tbody></table>';
+            dataDisplay.innerHTML = tableHTML;
+        }
+
+        function openAddProgramModal() {
+            document.getElementById('addProgramModal').style.display = 'block';
+        }
+
+        function closeAddProgramModal() {
+            document.getElementById('addProgramModal').style.display = 'none';
+            document.getElementById('programName').value = '';
+            document.getElementById('programDescription').value = '';
+            document.getElementById('programInstructions').value = '';
+        }
+
+        function saveProgram() {
+            const name = document.getElementById('programName').value.trim();
+            const description = document.getElementById('programDescription').value.trim();
+            const instructions = document.getElementById('programInstructions').value.trim();
+            
+            if (!name || !description || !instructions) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            const key = name.toLowerCase().replace(/\s+/g, '-');
+            programs[key] = {
+                name: name,
+                description: description,
+                instructions: instructions,
+                trials: [],
+                currentTrial: 1
+            };
+            
+            loadPrograms();
+            closeAddProgramModal();
+            alert('Program added successfully!');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('addProgramModal');
+            if (event.target === modal) {
+                closeAddProgramModal();
+            }
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPrograms();
+        });
+    </script>
+</body>
+</html>
