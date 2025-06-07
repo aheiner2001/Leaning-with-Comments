@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Screen</title>
+    <link rel="stylesheet" href="styles.css">
+      
+
+
+</head>
+<body>
+    <div class="main-screen" id="mainScreen">
+        <!-- Draggable items will be added here -->
+    </div>
+    
+
+```
+<div class="navigation">
+    <div class="nav-item" data-panel="background">
+        <div class="nav-icon" style="background-image: url('images/paint.png')"></div>
+        <span class="nav-text">Background</span>
+    </div>
+    <!-- <div class="nav-item" data-panel="sound">
+        <div class="nav-icon" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%234a90e2%22><path d=%22M3 10v4h4l5 5V5L7 10H3zm13.5 2c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77 0-4.28-2.99-7.86-7-8.77z%22/></svg>')"></div>
+        <span class="nav-text">Sound Level</span>
+    </div> -->
+    <div class="nav-item" data-panel="image">
+        <div class="nav-icon" style="background-image: url('images/image.png')"></div>
+        <span class="nav-text">Image</span>
+    </div>
+    <div class="nav-item" data-panel="text">
+        <div class="nav-icon" style="background-image: url('images/font.png')"></div>
+        <span class="nav-text">Text</span>
+    </div>
+    <div class="nav-item" data-panel="timer">
+        <div class="nav-icon" style="background-image: url('images/deadline.png')"></div>
+        <span class="nav-text">Timer</span>
+    </div>
+    <div class="nav-item" data-panel="clock">
+        <div class="nav-icon" style="background-image: url('images/clock.png')"></div>
+        <span class="nav-text">Clock</span>
+    </div>
+    <div class="nav-item menu" data-panel="more">
+        <div class="nav-icon" style="background-image: url('images/apps.png')"></div>
+        <span class="nav-text">More</span>
+    </div>
+    <div class="nav-item arrow">
+        <div class="nav-icon" style="background-image: url('images/down.png')"></div>
+        
+    </div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="side-panel" id="sidePanel">
+    <div class="panel-header" id="panelHeader">Panel</div>
+    <div class="panel-content" id="panelContent">
+        <!-- Dynamic content will be inserted here -->
+    </div>
+</div>
+
+<div id="actionMenu" class="action-menu hidden">
+    <button onclick="editItem()">Edit</button>
+    <button onclick="deleteItem()">Delete</button>
+</div>
+<script src="script.js"></script>
+<!-- <script src="state.js" defer></script>
+<script src="panelContent.js" defer></script>
+<script src="main.js" defer></script> -->
+
+</body>
+</html>
