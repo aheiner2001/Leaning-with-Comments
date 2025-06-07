@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draggable Rubik's Cube</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            perspective: 1000px;
+        }
+
+        .cube-container {
+            width: 200px;
+            height: 200px;
+            position: relative;
+
+
+
+
+
+            /* he CSS property transform-style: preserve-3d; is used
+             to specify how child elements are rendered in 3D space when a 
+             3D transformation is applied to a parent element. By default, child 
+             elements are flattened into the plane of the parent, meaning any 3D 
+             transformations on the children will appear as if they are in 2D.
+
+When you set transform-style: preserve-3d; on a parent element, it allows its 
+children to maintain their 3D position and perspective. This is essential for 
+creating complex 3D effects, such as rotating cubes or cards, where you want
+ each face or child element to appear at different depths and angles in 3D space.
+
+A common "gotcha" is that transform-style: preserve-3d; only has an effect if 
+the parent element itself is transformed (for example, with transform: rotateY(45deg);).
+ Without a transformation on the parent, the property has no visible effect. Also, not 
+ all browsers support 3D transforms equally, so always check compatibility if you rely 
+ on advanced 3D effects. */
+            transform-style: preserve-3d;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .cube-container:active {
+            cursor: grabbing;
+        }
+
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
+        }
+
+
+        .face {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border: 2px solid #333;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 2px;
+            padding: 4px;
+            box-sizing: border-box;
+            
+        }
+        
+
+        .square {
+            border: 1px solid #000;
+            border-radius: 4px;
+             border-radius: 1rem;
+        }
+        .square:hover{
+            opacity: 80%;
+        }
+
+        /* Front face - Red */
+        .front {
+            background: #000000;
+            transform: translateZ(100px);
+        }
+        .front .square { background: #ff6666; }
+
+        /* Back face - Orange */
+        .back {
+            background: #000000;
+            transform: translateZ(-100px) rotateY(180deg);
+        }
+        .back .square { background: #ffaa44; }
+
+        /* Right face - Blue */
+        .right {
+            background: #000000;
+            transform: rotateY(90deg) translateZ(100px);
+        }
+        .right .square { background: #6666ff; }
+
+        /* Left face - Green */
+        .left {
+            background: #000000;
+            transform: rotateY(-90deg) translateZ(100px);
+        }
+        .left .square { background: #66ff66; }
+
+        /* Top face - White */
+        .top {
+            background: #000000;
+            transform: rotateX(90deg) translateZ(100px);
+        }
+        .top .square { background: #f0f0f0; }
+
+        /* Bottom face - Yellow */
+        .bottom {
+            background: #000000;
+            transform: rotateX(-90deg) translateZ(100px);
+        }
+        .bottom .square { background: #ffff66; }
+
+        .instructions {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 16px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        Click and drag to rotate the cube
+    </div>
+    
+    <div class="cube-container" id="cubeContainer">
+        <div class="cube" id="cube">
+            <div class="face front">
+                <div class="square"></div><div class="square"></div><div class="square"></div>
+                <div class="square"></div><div class="square"></div><div class="square"></div>
+                <div class="square"></div><div class="square"></div><div class="square"></div>
+            </div>
+            <div class="face back">
+                <div class="square"></div><div class="square"></div><div class="square"></div>
+                <div class="square"></div><div class="square"></div><div class="square"></div>
+                <div class="square"></div><div class="square"></div><div class="square"></div>
+            </div>
+            <div class="face right">
+                <div class="square"></div><div class="square"></div><div class="square"></div>
+                <div class="square"></div><div class="square"></div><div class="square"></div>
+                <div class="square"></div><div class="square"></div><div class="square"></div>
+            </div>
+            <div class="face left">
+                <div class="square"></div><div class="square"></div><div class="square"></div>
+                <div class="square"></div><div class="square"></div><div class="square"></div>
+                <div class="square"></div><div class="square"></div><div class="square"></div>
+            </div>
+            <div class="face top">
+                <div class="square"></div><div class="square"></div><div class="square"></div>
+                <div class="square"></div><div class="square"></div><div class="square"></div>
+                <div class="square"></div><div class="square"></div><div class="square"></div>
+            </div>
+            <div class="face bottom">
+                <div class="square"></div><div class="square"></div><div class="square"></div>
+                <div class="square"></div><div class="square"></div><div class="square"></div>
+                <div class="square"></div><div class="square"></div><div class="square"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class DraggableCube {
+            constructor() {
+                this.cube = document.getElementById('cube');
+                this.container = document.getElementById('cubeContainer');
+                
+                // Rotation state
+                //   so i change the y rOtation from -15 to 15 which then alllows the cube to be able to rorate
+                this.rotationX = 15;
+                this.rotationY = 15;
+                
+                // Mouse state
+                this.isDragging = false;
+                this.previousMouseX = 0;
+                this.previousMouseY = 0;
+                
+                // Sensitivity
+                this.sensitivity = 0.5;
+                
+                this.init();
+                this.updateCubeRotation();
+            }
+            
+            init() {
+                // Mouse events
+                this.container.addEventListener('mousedown', this.onMouseDown.bind(this));
+                document.addEventListener('mousemove', this.onMouseMove.bind(this));
+                document.addEventListener('mouseup', this.onMouseUp.bind(this));
+                
+                // Touch events for mobile
+                this.container.addEventListener('touchstart', this.onTouchStart.bind(this));
+                document.addEventListener('touchmove', this.onTouchMove.bind(this));
+                document.addEventListener('touchend', this.onTouchEnd.bind(this));
+                
+                // Prevent context menu
+                this.container.addEventListener('contextmenu', (e) => e.preventDefault());
+            }
+            
+            onMouseDown(e) {
+                this.isDragging = true;
+                this.previousMouseX = e.clientX;
+                this.previousMouseY = e.clientY;
+                this.cube.style.transition = 'none';
+            }
+            
+            onMouseMove(e) {
+                if (!this.isDragging) return;
+                
+                const deltaX = e.clientX - this.previousMouseX;
+                const deltaY = e.clientY - this.previousMouseY;
+                
+                this.rotationY += deltaX * this.sensitivity;
+                this.rotationX -= deltaY * this.sensitivity;
+                
+                this.updateCubeRotation();
+                
+                this.previousMouseX = e.clientX;
+                this.previousMouseY = e.clientY;
+            }
+            
+            onMouseUp() {
+                this.isDragging = false;
+                this.cube.style.transition = 'transform 2s ease-out';
+            }
+            
+            // Touch events
+            // onTouchStart(e) {
+            //     e.preventDefault();
+            //     const touch = e.touches[0];
+            //     this.isDragging = true;
+            //     this.previousMouseX = touch.clientX;
+            //     this.previousMouseY = touch.clientY;
+            //     this.cube.style.transition = 'none';
+            // }
+            
+            // onTouchMove(e) {
+            //     if (!this.isDragging) return;
+            //     e.preventDefault();
+                
+            //     const touch = e.touches[0];
+            //     const deltaX = touch.clientX - this.previousMouseX;
+            //     const deltaY = touch.clientY - this.previousMouseY;
+                
+            //     this.rotationY += deltaX * this.sensitivity;
+            //     this.rotationX -= deltaY * this.sensitivity;
+                
+            //     this.updateCubeRotation();
+                
+            //     this.previousMouseX = touch.clientX;
+            //     this.previousMouseY = touch.clientY;
+            // }
+            
+            // onTouchEnd() {
+            //     this.isDragging = false;
+            //     this.cube.style.transition = 'transform 0.1s ease-out';
+            // }
+            
+            updateCubeRotation() {
+                this.cube.style.transform = `rotateX(${this.rotationX}deg) rotateY(${this.rotationY}deg)`;
+            }
+        }
+        
+        // Initialize the draggable cube
+        new DraggableCube();
+    </script>
+</body>
+</html>

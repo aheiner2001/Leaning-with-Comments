@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza Places Tier List Maker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .header {
+        background: linear-gradient(45deg, #ff6b6b, #feca57);
+        padding: 30px;
+        text-align: center;
+        color: white;
+    }
+
+    .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .tier-container {
+        padding: 30px;
+    }
+
+    .tier-row {
+        display: flex;
+        margin-bottom: 15px;
+        min-height: 120px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .tier-row:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .tier-label {
+        width: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 2rem;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .s-tier { background: linear-gradient(45deg, #ff6b6b, #ee5a52); }
+    .a-tier { background: linear-gradient(45deg, #feca57, #ff9ff3); }
+    .b-tier { background: linear-gradient(45deg, #48dbfb, #0abde3); }
+    .c-tier { background: linear-gradient(45deg, #1dd1a1, #10ac84); }
+    .d-tier { background: linear-gradient(45deg, #ffeaa7, #fdcb6e); }
+    .f-tier { background: linear-gradient(45deg, #fd79a8, #e84393); }
+
+    .tier-items {
+        flex: 1;
+        background: #f8f9fa;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 10px;
+        gap: 10px;
+        min-height: 120px;
+    }
+
+    .pizza-items {
+        margin-top: 30px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        border: 2px dashed #dee2e6;
+    }
+
+    .pizza-items h3 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #495057;
+        font-size: 1.5rem;
+    }
+
+    .items-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .pizza-item {
+        width: 100px;
+        height: 100px;
+        border-radius: 10px;
+        cursor: grab;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 0.9rem;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        user-select: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .pizza-item:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    .pizza-item:active {
+        cursor: grabbing;
+        transform: scale(0.95);
+    }
+
+    .pizza-item.dragging {
+        opacity: 0.5;
+        transform: rotate(5deg);
+    }
+
+    /* Pizza place styles */
+    .dominos { background: linear-gradient(45deg, #0066cc, #004499); }
+    .pizza-hut { background: linear-gradient(45deg, #ee3124, #cc1e14); }
+    .papa-johns { background: linear-gradient(45deg, #00a149, #007a37); }
+    .little-caesars { background: linear-gradient(45deg, #f68121, #e5741f); }
+    .papa-murphys { background: linear-gradient(45deg, #8b0000, #660000); }
+    .casey-general { background: linear-gradient(45deg, #ff6b35, #f7931e); }
+    .godfather { background: linear-gradient(45deg, #2c3e50, #34495e); }
+    .marcos { background: linear-gradient(45deg, #b8860b, #daa520); }
+    .blaze { background: linear-gradient(45deg, #ff4500, #ff6347); }
+    .california-pizza { background: linear-gradient(45deg, #800080, #9932cc); }
+    .jets { background: linear-gradient(45deg, #1e3a8a, #3b82f6); }
+    .pizza-ranch { background: linear-gradient(45deg, #8b4513, #a0522d); }
+    .caseys { background: linear-gradient(45deg, #dc143c, #b22222); }
+    .happy-joe { background: linear-gradient(45deg, #ffb347, #ffa500); }
+    .ginos { background: linear-gradient(45deg, #006400, #228b22); }
+    .pizza-time { background: linear-gradient(45deg, #4b0082, #663399); }
+
+    .controls {
+        text-align: center;
+        padding: 20px;
+        background: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .btn {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-size: 1rem;
+        cursor: pointer;
+        margin: 0 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .drop-zone {
+        min-height: 100px;
+        border: 2px dashed transparent;
+        transition: all 0.3s ease;
+    }
+
+    .drop-zone.drag-over {
+        border-color: #667eea;
+        background: rgba(102, 126, 234, 0.1);
+    }
+
+    @media (max-width: 768px) {
+        .tier-label {
+            width: 80px;
+            font-size: 1.5rem;
+        }
+        
+        .pizza-item {
+            width: 80px;
+            height: 80px;
+            font-size: 0.8rem;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+        }
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍕 Pizza Places Tier List Maker</h1>
+            <p>Drag and drop pizza places to rank them from S-tier (legendary) to F-tier (forgettable)</p>
+        </div>
+
+```
+    <div class="tier-container">
+        <div class="tier-row">
+            <div class="tier-label s-tier">S</div>
+            <div class="tier-items drop-zone" data-tier="S"></div>
+        </div>
+
+        <div class="tier-row">
+            <div class="tier-label a-tier">A</div>
+            <div class="tier-items drop-zone" data-tier="A"></div>
+        </div>
+
+        <div class="tier-row">
+            <div class="tier-label b-tier">B</div>
+            <div class="tier-items drop-zone" data-tier="B"></div>
+        </div>
+
+        <div class="tier-row">
+            <div class="tier-label c-tier">C</div>
+            <div class="tier-items drop-zone" data-tier="C"></div>
+        </div>
+
+        <div class="tier-row">
+            <div class="tier-label d-tier">D</div>
+            <div class="tier-items drop-zone" data-tier="D"></div>
+        </div>
+
+        <div class="tier-row">
+            <div class="tier-label f-tier">F</div>
+            <div class="tier-items drop-zone" data-tier="F"></div>
+        </div>
+
+        <div class="pizza-items">
+            <h3>🍕 Drag Pizza Places to Rank Them</h3>
+            <div class="items-grid drop-zone" data-tier="unranked">
+                <div class="pizza-item dominos" draggable="true" data-pizza="dominos">
+                    Domino's
+                </div>
+                <div class="pizza-item pizza-hut" draggable="true" data-pizza="pizza-hut">
+                    Pizza Hut
+                </div>
+                <div class="pizza-item papa-johns" draggable="true" data-pizza="papa-johns">
+                    Papa John's
+                </div>
+                <div class="pizza-item little-caesars" draggable="true" data-pizza="little-caesars">
+                    Little Caesars
+                </div>
+                <div class="pizza-item papa-murphys" draggable="true" data-pizza="papa-murphys">
+                    Papa Murphy's
+                </div>
+             
+                <div class="pizza-item blaze" draggable="true" data-pizza="blaze">
+                    Blaze Pizza
+                </div>
+                <div class="pizza-item california-pizza" draggable="true" data-pizza="california-pizza">
+                    CPK
+                </div>
+            
+    
+                <div class="pizza-item pizza-time" draggable="true" data-pizza="costco">
+                    Costco
+                </div>
+                 <div class="pizza-item pizza-time" draggable="true" data-pizza="mod">
+                    Mod
+                </div>
+                 <div class="pizza-item pizza-time" draggable="true" data-pizza="mini pizzas">
+                    Mini pizzas
+                    
+                </div>
+                           <div class="pizza-item pizza-time" draggable="true" data-pizza="mini pizzas">
+                   righteous slice
+                </div>
+                           <div class="pizza-item pizza-time" draggable="true" data-pizza="mini pizzas">
+                    jackson pizza
+                    
+                </div>
+               
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn" onclick="resetTierList()">🔄 Reset List</button>
+        <button class="btn" onclick="randomizePlacements()">🎲 Random Ranking</button>
+        <button class="btn" onclick="saveTierList()">💾 Save Ranking</button>
+    </div>
+</div>
+
+<script>
+    let draggedElement = null;
+    let rankings = {};
+
+    // Initialize drag and drop
+    document.addEventListener('DOMContentLoaded', function() {
+        setupDragAndDrop();
+    });
+
+    function setupDragAndDrop() {
+        const pizzaItems = document.querySelectorAll('.pizza-item');
+        const dropZones = document.querySelectorAll('.drop-zone');
+
+        pizzaItems.forEach(item => {
+            item.addEventListener('dragstart', handleDragStart);
+            item.addEventListener('dragend', handleDragEnd);
+        });
+
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', handleDragOver);
+            zone.addEventListener('drop', handleDrop);
+            zone.addEventListener('dragenter', handleDragEnter);
+            zone.addEventListener('dragleave', handleDragLeave);
+        });
+    }
+
+    function handleDragStart(e) {
+        draggedElement = this;
+        this.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleDragEnd(e) {
+        this.classList.remove('dragging');
+        draggedElement = null;
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    }
+
+    function handleDragEnter(e) {
+        e.preventDefault();
+        this.classList.add('drag-over');
+    }
+
+    function handleDragLeave(e) {
+        this.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        this.classList.remove('drag-over');
+        
+        if (draggedElement && this !== draggedElement.parentNode) {
+            this.appendChild(draggedElement);
+            
+            // Update rankings
+            const tier = this.dataset.tier;
+            const pizza = draggedElement.dataset.pizza;
+            if (tier !== 'unranked') {
+                rankings[pizza] = tier;
+            } else {
+                delete rankings[pizza];
+            }
+            
+            // Add visual feedback
+            draggedElement.style.animation = 'bounce 0.5s ease';
+            setTimeout(() => {
+                draggedElement.style.animation = '';
+            }, 500);
+        }
+    }
+
+    function resetTierList() {
+        const unrankedZone = document.querySelector('[data-tier="unranked"]');
+        const allPizzaItems = document.querySelectorAll('.pizza-item');
+        
+        allPizzaItems.forEach(item => {
+            unrankedZone.appendChild(item);
+        });
+        
+        rankings = {};
+        showNotification('Tier list reset! 🔄');
+    }
+
+    function randomizePlacements() {
+        const tiers = ['S', 'A', 'B', 'C', 'D', 'F'];
+        const pizzaItems = document.querySelectorAll('.pizza-item');
+        
+        pizzaItems.forEach(item => {
+            const randomTier = tiers[Math.floor(Math.random() * tiers.length)];
+            const tierZone = document.querySelector(`[data-tier="${randomTier}"]`);
+            tierZone.appendChild(item);
+            rankings[item.dataset.pizza] = randomTier;
+        });
+        
+        showNotification('Random ranking applied! 🎲');
+    }
+
+    function saveTierList() {
+        const tierData = {
+            S: [], A: [], B: [], C: [], D: [], F: [], unranked: []
+        };
+        
+        Object.keys(tierData).forEach(tier => {
+            const zone = document.querySelector(`[data-tier="${tier}"]`);
+            const items = zone.querySelectorAll('.pizza-item');
+            items.forEach(item => {
+                tierData[tier].push(item.textContent.trim());
+            });
+        });
+        
+        console.log('Your Pizza Tier List:', tierData);
+        showNotification('Tier list saved to console! Check developer tools 💾');
+        
+        // You could also save to localStorage here
+        localStorage.setItem('pizzaTierList', JSON.stringify(tierData));
+    }
+
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 1000;
+            font-weight: bold;
+            animation: slideIn 0.5s ease;
+        `;
+        
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes bounce {
+                0%, 20%, 60%, 100% { transform: translateY(0); }
+                40% { transform: translateY(-10px); }
+                80% { transform: translateY(-5px); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        document.body.appendChild(notification);
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    // Add some fun interactions
+    document.querySelectorAll('.pizza-item').forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.05) rotate(1deg)';
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            this.style.transform = '';
+        });
+    });
+</script>
+```
+
+</body>
+</html>
