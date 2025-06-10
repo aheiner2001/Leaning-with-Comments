@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>YouTube to MP3</title>
+</head>
+<body>
+  <h1>YouTube to MP3 Downloader</h1>
+  <input type="text" id="urlInput" placeholder="Paste YouTube URL" />
+  <button onclick="downloadMP3()">Download MP3</button>
+
+  <script>
+    function downloadMP3() {
+      const url = document.getElementById('urlInput').value;
+      fetch('/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Download failed');
+        return response.blob();
+      })
+      .then(blob => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'video.mp3';
+        link.click();
+      })
+      .catch(error => alert(error.message));
+    }
+  </script>
+</body>
+</html>
